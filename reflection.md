@@ -4,14 +4,11 @@
 
 **a. Initial design**
 
-- A user should be able to enter and update basic owner and pet information so the app knows who the schedule is for and what kind of care the pet needs.
-- A user should be able to add and manage pet care tasks such as walks, feeding, medication, grooming, or playtime, including details like duration and priority.
-- A user should be able to generate and review today's care plan so they can see which tasks should happen, in what order, and why those tasks were chosen.
-- My initial UML design includes four main objects: `Owner`, `Pet`, `Task`, and `Scheduler`.
-- `Owner` holds information such as the owner's name, time available, daily preferences, and a list of pets. Its methods could include updating preferences, adding a pet, and viewing today's plan.
-- `Pet` holds information such as the pet's name, species, age, care notes, and its list of care tasks. Its methods could include adding a task, removing a task, and listing upcoming needs.
-- `Task` holds information such as the task name, category, duration, priority, frequency, and whether it is required today. Its methods could include marking the task complete, checking whether it fits the schedule, and describing why it matters.
-- `Scheduler` holds the owner, the pet or pets, the available tasks, and the time constraints for the day. Its methods could include generating a daily plan, sorting tasks by priority, filtering tasks that do not fit, and explaining the final schedule.
+- My initial design focused on four classes: `Owner`, `Pet`, `Task`, and `Scheduler`. I chose these because they match the real parts of the problem. The owner provides the time limits and preferences, the pet represents who needs care, the task represents each care activity, and the scheduler is responsible for building the final daily plan.
+- `Owner` is responsible for storing the owner's name, available time, preferences, and pets. This class acts as the top-level user context for the app.
+- `Pet` is responsible for storing pet-specific information such as name, species, age, care notes, and the list of tasks for that pet. This keeps care information grouped around the pet instead of mixing it directly into the scheduler.
+- `Task` is responsible for storing the details of a single care item, including its category, duration, priority, frequency, and completion status. This makes each task easy to sort, filter, and explain later.
+- `Scheduler` is responsible for turning the owner's constraints and the pets' tasks into a daily plan. I gave it methods for sorting tasks by priority, filtering tasks that do not fit, generating the final plan, and explaining why the plan was chosen.
 - Mermaid UML draft:
 
 ```mermaid
@@ -73,8 +70,8 @@ classDiagram
 
 **b. Design changes**
 
-- Did your design change during implementation?
-- If yes, describe at least one change and why you made it.
+- Yes. After reviewing the class skeleton, I noticed that `Scheduler` was storing both an `owner` and separate `pets` and `tasks` lists. That created a risk that the scheduler's copies could get out of sync with the pets already attached to the owner.
+- I changed the design so `Scheduler` keeps the `owner` as its main relationship and derives `pets` and `tasks` from that owner when needed. This reduces duplicate state and should make the scheduling logic simpler and less error-prone during implementation.
 
 ---
 
