@@ -84,8 +84,8 @@ classDiagram
 
 **b. Tradeoffs**
 
-- Describe one tradeoff your scheduler makes.
-- Why is that tradeoff reasonable for this scenario?
+- One tradeoff my scheduler makes is in conflict detection. Right now it only checks whether two tasks have the exact same scheduled start time, instead of calculating more realistic overlaps based on task duration or flexible time windows.
+- I considered a more compact and "Pythonic" approach that groups tasks by time in a dictionary, but I kept the simpler loop-based version because it is easier to read and explain. For this project, that tradeoff is reasonable because the goal is to provide a lightweight warning without adding too much complexity to an early version of the app.
 
 ---
 

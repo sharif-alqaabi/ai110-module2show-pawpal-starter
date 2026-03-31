@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from datetime import date, timedelta
 from dataclasses import dataclass, field
 from typing import List
 
@@ -11,6 +12,8 @@ class Task:
     duration: int
     priority: int
     frequency: str
+    time: str = "09:00"
+    due_date: date = field(default_factory=date.today)
     required_today: bool = True
     completed: bool = False
 
@@ -18,9 +21,40 @@ class Task:
         """Mark the task as finished."""
         self.completed = True
 
+    def is_due_today(self, reference_date: date | None = None) -> bool:
+        """Return whether the task should be scheduled on the reference date."""
+        current_date = reference_date or date.today()
+        return self.required_today and self.due_date <= current_date
+
+    def next_due_date(self) -> date | None:
+        """Return the next due date for recurring tasks."""
+        normalized_frequency = self.frequency.lower()
+        if normalized_frequency == "daily":
+            return self.due_date + timedelta(days=1)
+        if normalized_frequency == "weekly":
+            return self.due_date + timedelta(weeks=1)
+        return None
+
+    def create_next_occurrence(self) -> Task | None:
+        """Create the next recurring task instance when applicable."""
+        next_due = self.next_due_date()
+        if next_due is None:
+            return None
+
+        return Task(
+            name=self.name,
+            category=self.category,
+            duration=self.duration,
+            priority=self.priority,
+            frequency=self.frequency,
+            time=self.time,
+            due_date=next_due,
+            required_today=next_due <= date.today(),
+        )
+
     def fits_schedule(self, available_time: int) -> bool:
         """Return whether the task can fit in the available time."""
-        return self.required_today and not self.completed and self.duration <= available_time
+        return self.is_due_today() and not self.completed and self.duration <= available_time
 
     def describe_reason(self) -> str:
         """Explain why this task matters in the daily plan."""
@@ -52,8 +86,19 @@ class Pet:
         return [
             task
             for task in self.tasks
-            if task.required_today and not task.completed
+            if task.is_due_today() and not task.completed
         ]
+
+    def mark_task_complete(self, task_name: str) -> Task | None:
+        """Complete a task and create its next recurring instance if needed."""
+        for task in self.tasks:
+            if task.name == task_name and not task.completed:
+                task.mark_complete()
+                next_task = task.create_next_occurrence()
+                if next_task is not None:
+                    self.tasks.append(next_task)
+                return next_task
+        return None
 
 
 @dataclass
@@ -81,7 +126,7 @@ class Owner:
     def view_today_plan(self) -> str:
         """Return a human-readable view of today's plan."""
         upcoming_tasks = [
-            task for task in self.get_all_tasks() if task.required_today and not task.completed
+            task for task in self.get_all_tasks() if task.is_due_today() and not task.completed
         ]
         if not upcoming_tasks:
             return f"{self.name} has no remaining pet care tasks for today."
@@ -115,7 +160,8 @@ class Scheduler:
     def generate_daily_plan(self) -> List[Task]:
         """Build the final ordered plan for the day."""
         fitting_tasks = self.filter_unfit_tasks()
-        return self.sort_by_priority(fitting_tasks)
+        prioritized_tasks = self.sort_by_priority(fitting_tasks)
+        return self.sort_by_time(prioritized_tasks)
 
     def sort_by_priority(self, tasks: List[Task] | None = None) -> List[Task]:
         """Sort tasks so the most important ones come first."""
@@ -124,6 +170,50 @@ class Scheduler:
             task_list,
             key=lambda task: (-task.priority, task.duration, task.name.lower()),
         )
+
+    def sort_by_time(self, tasks: List[Task] | None = None) -> List[Task]:
+        """Sort tasks by their HH:MM time value."""
+        task_list = tasks if tasks is not None else self.tasks
+        return sorted(
+            task_list,
+            key=lambda task: tuple(int(part) for part in task.time.split(":")),
+        )
+
+    def filter_tasks_by_status(self, completed: bool) -> List[Task]:
+        """Return tasks that match the requested completion status."""
+        return [task for task in self.tasks if task.completed is completed]
+
+    def filter_tasks_by_pet(self, pet_name: str) -> List[Task]:
+        """Return tasks for the named pet."""
+        for pet in self.pets:
+            if pet.name.lower() == pet_name.lower():
+                return pet.tasks
+        return []
+
+    def mark_task_complete(self, pet_name: str, task_name: str) -> Task | None:
+        """Complete a pet task and create its next recurring occurrence when needed."""
+        for pet in self.pets:
+            if pet.name.lower() == pet_name.lower():
+                return pet.mark_task_complete(task_name)
+        return None
+
+    def detect_conflicts(self, tasks: List[Task] | None = None) -> List[str]:
+        """Return warning messages for tasks that share the same scheduled time."""
+        task_list = self.sort_by_time(tasks if tasks is not None else self.tasks)
+        warnings: List[str] = []
+
+        for index, current_task in enumerate(task_list):
+            for other_task in task_list[index + 1 :]:
+                if current_task.time != other_task.time:
+                    continue
+
+                warnings.append(
+                    "Conflict detected: "
+                    f"'{current_task.name}' and '{other_task.name}' are both scheduled for "
+                    f"{current_task.time}."
+                )
+
+        return warnings
 
     def filter_unfit_tasks(self) -> List[Task]:
         """Remove tasks that do not fit the current constraints."""
@@ -145,8 +235,12 @@ class Scheduler:
 
         lines = ["Today's plan:"]
         for task in plan:
-            lines.append(f"- {task.name} ({task.duration} min): {task.describe_reason()}")
+            lines.append(
+                f"- {task.time} | {task.name} ({task.duration} min): {task.describe_reason()}"
+            )
 
         unused_time = self.get_available_time() - sum(task.duration for task in plan)
         lines.append(f"Unused time remaining: {unused_time} minutes.")
+        for warning in self.detect_conflicts(plan):
+            lines.append(f"Warning: {warning}")
         return "\n".join(lines)
