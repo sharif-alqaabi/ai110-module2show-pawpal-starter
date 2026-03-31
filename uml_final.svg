@@ -1,0 +1,91 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1000" viewBox="0 0 1600 1000">
+  <style>
+    .title { font: 700 26px Arial, sans-serif; fill: #1f2937; }
+    .box { fill: #f8fafc; stroke: #334155; stroke-width: 2; rx: 12; ry: 12; }
+    .header { fill: #dbeafe; stroke: #334155; stroke-width: 2; }
+    .name { font: 700 22px Arial, sans-serif; fill: #0f172a; }
+    .text { font: 16px Arial, sans-serif; fill: #1f2937; }
+    .small { font: 15px Arial, sans-serif; fill: #334155; }
+    .line { stroke: #475569; stroke-width: 2.5; fill: none; }
+    .dash { stroke: #64748b; stroke-width: 2.5; stroke-dasharray: 8 6; fill: none; }
+    .label { font: 15px Arial, sans-serif; fill: #0f172a; }
+  </style>
+
+  <text x="60" y="50" class="title">PawPal+ Final UML</text>
+
+  <rect x="60" y="90" width="320" height="280" class="box"/>
+  <rect x="60" y="90" width="320" height="50" class="header"/>
+  <text x="190" y="122" text-anchor="middle" class="name">Owner</text>
+  <text x="80" y="165" class="text">+ name</text>
+  <text x="80" y="190" class="text">+ time_available</text>
+  <text x="80" y="215" class="text">+ preferences</text>
+  <text x="80" y="240" class="text">+ pets</text>
+  <text x="80" y="275" class="text">+ update_preferences()</text>
+  <text x="80" y="300" class="text">+ add_pet()</text>
+  <text x="80" y="325" class="text">+ get_all_tasks()</text>
+  <text x="80" y="350" class="text">+ view_today_plan()</text>
+
+  <rect x="460" y="90" width="320" height="320" class="box"/>
+  <rect x="460" y="90" width="320" height="50" class="header"/>
+  <text x="620" y="122" text-anchor="middle" class="name">Pet</text>
+  <text x="480" y="165" class="text">+ name</text>
+  <text x="480" y="190" class="text">+ species</text>
+  <text x="480" y="215" class="text">+ age</text>
+  <text x="480" y="240" class="text">+ care_notes</text>
+  <text x="480" y="265" class="text">+ tasks</text>
+  <text x="480" y="300" class="text">+ add_task()</text>
+  <text x="480" y="325" class="text">+ remove_task()</text>
+  <text x="480" y="350" class="text">+ list_upcoming_needs()</text>
+  <text x="480" y="375" class="text">+ mark_task_complete()</text>
+
+  <rect x="860" y="70" width="350" height="450" class="box"/>
+  <rect x="860" y="70" width="350" height="50" class="header"/>
+  <text x="1035" y="102" text-anchor="middle" class="name">Task</text>
+  <text x="880" y="145" class="text">+ name</text>
+  <text x="880" y="170" class="text">+ category</text>
+  <text x="880" y="195" class="text">+ duration</text>
+  <text x="880" y="220" class="text">+ priority</text>
+  <text x="880" y="245" class="text">+ frequency</text>
+  <text x="880" y="270" class="text">+ time</text>
+  <text x="880" y="295" class="text">+ due_date</text>
+  <text x="880" y="320" class="text">+ required_today</text>
+  <text x="880" y="345" class="text">+ completed</text>
+  <text x="880" y="380" class="text">+ mark_complete()</text>
+  <text x="880" y="405" class="text">+ is_due_today()</text>
+  <text x="880" y="430" class="text">+ next_due_date()</text>
+  <text x="880" y="455" class="text">+ create_next_occurrence()</text>
+  <text x="880" y="480" class="text">+ fits_schedule()</text>
+  <text x="880" y="505" class="text">+ describe_reason()</text>
+
+  <rect x="360" y="560" width="520" height="340" class="box"/>
+  <rect x="360" y="560" width="520" height="50" class="header"/>
+  <text x="620" y="592" text-anchor="middle" class="name">Scheduler</text>
+  <text x="385" y="635" class="text">+ owner</text>
+  <text x="385" y="660" class="text">+ available_time</text>
+  <text x="385" y="685" class="text">+ pets</text>
+  <text x="385" y="710" class="text">+ tasks</text>
+  <text x="385" y="745" class="text">+ get_available_time()</text>
+  <text x="385" y="770" class="text">+ generate_daily_plan()</text>
+  <text x="385" y="795" class="text">+ sort_by_priority()</text>
+  <text x="385" y="820" class="text">+ sort_by_time()</text>
+  <text x="385" y="845" class="text">+ filter_tasks_by_status()</text>
+  <text x="635" y="745" class="text">+ filter_tasks_by_pet()</text>
+  <text x="635" y="770" class="text">+ mark_task_complete()</text>
+  <text x="635" y="795" class="text">+ detect_conflicts()</text>
+  <text x="635" y="820" class="text">+ filter_unfit_tasks()</text>
+  <text x="635" y="845" class="text">+ explain_plan()</text>
+
+  <path d="M380 230 L460 230" class="line"/>
+  <text x="395" y="215" class="label">1 has 0..*</text>
+
+  <path d="M780 250 L860 250" class="line"/>
+  <text x="790" y="235" class="label">1 has 0..*</text>
+
+  <path d="M500 560 L330 390 L330 230 L380 230" class="line"/>
+  <text x="270" y="405" class="label">uses Owner</text>
+
+  <path d="M760 560 L760 460 L860 460" class="dash"/>
+  <text x="775" y="540" class="label">reads Pet/Task data</text>
+
+  <text x="60" y="955" class="small">Updated to reflect final implementation: recurrence, due dates, time sorting, task filters, and conflict detection.</text>
+</svg>

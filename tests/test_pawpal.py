@@ -129,3 +129,31 @@ def test_detect_conflicts_flags_duplicate_task_times() -> None:
     assert "08:30" in warnings[0]
     assert "Medication" in warnings[0]
     assert "Breakfast refill" in warnings[0]
+
+
+def test_owner_can_save_and_load_from_json(tmp_path) -> None:
+    owner = Owner(name="Jordan", time_available=45, preferences=["prioritize health"])
+    pet = Pet(name="Mochi", species="dog", age=3, care_notes="Needs exercise")
+    pet.add_task(
+        Task(
+            name="Morning walk",
+            category="exercise",
+            duration=20,
+            priority=3,
+            frequency="daily",
+            time="08:30",
+        )
+    )
+    owner.add_pet(pet)
+
+    json_path = tmp_path / "data.json"
+    owner.save_to_json(str(json_path))
+    loaded_owner = Owner.load_from_json(str(json_path))
+
+    assert loaded_owner.name == "Jordan"
+    assert loaded_owner.time_available == 45
+    assert loaded_owner.preferences == ["prioritize health"]
+    assert len(loaded_owner.pets) == 1
+    assert loaded_owner.pets[0].name == "Mochi"
+    assert len(loaded_owner.pets[0].tasks) == 1
+    assert loaded_owner.pets[0].tasks[0].name == "Morning walk"

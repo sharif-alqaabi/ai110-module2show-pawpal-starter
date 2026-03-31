@@ -22,6 +22,17 @@ Your final app should:
 - Display the plan clearly (and ideally explain the reasoning)
 - Include tests for the most important scheduling behaviors
 
+## Features
+
+- Owner and pet management for storing household care information.
+- Task creation with category, duration, priority, frequency, due date, and scheduled `HH:MM` time.
+- Time-based scheduling that sorts tasks chronologically for a cleaner daily plan.
+- Filtering tools that let the app show tasks by pet or by completion status.
+- Daily and weekly recurrence support that automatically creates the next task occurrence after completion.
+- Conflict warnings that alert the owner when two tasks share the same scheduled time.
+- JSON persistence so pets and tasks can be restored from `data.json` between app runs.
+- Streamlit UI views for task tables, filtered task exploration, and schedule explanations.
+
 ## Getting started
 
 ### Setup
@@ -50,6 +61,10 @@ PawPal+ now includes a smarter scheduling layer beyond the original starter logi
 - Tasks can be filtered by pet name or completion status.
 - Daily and weekly recurring tasks automatically generate the next occurrence when completed.
 - The scheduler can detect lightweight schedule conflicts and return warnings instead of crashing.
+
+## Optional Extension: Persistence
+
+PawPal+ now supports saving and loading owner, pet, and task data through a custom JSON serialization layer. I used an agent-style workflow to break this into two steps: first adding `save_to_json()` and `load_from_json()` in the backend, then updating the Streamlit session state to load saved data on startup and save changes after user actions.
 
 ## Testing PawPal+
 

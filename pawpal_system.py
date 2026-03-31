@@ -1,7 +1,9 @@
 from __future__ import annotations
 
+import json
 from datetime import date, timedelta
 from dataclasses import dataclass, field
+from pathlib import Path
 from typing import List
 
 
@@ -64,6 +66,35 @@ class Task:
             reason += " and it is needed today"
         return reason + "."
 
+    def to_dict(self) -> dict[str, str | int | bool]:
+        """Convert the task into a JSON-friendly dictionary."""
+        return {
+            "name": self.name,
+            "category": self.category,
+            "duration": self.duration,
+            "priority": self.priority,
+            "frequency": self.frequency,
+            "time": self.time,
+            "due_date": self.due_date.isoformat(),
+            "required_today": self.required_today,
+            "completed": self.completed,
+        }
+
+    @classmethod
+    def from_dict(cls, data: dict[str, str | int | bool]) -> Task:
+        """Create a task from a JSON-friendly dictionary."""
+        return cls(
+            name=str(data["name"]),
+            category=str(data["category"]),
+            duration=int(data["duration"]),
+            priority=int(data["priority"]),
+            frequency=str(data["frequency"]),
+            time=str(data.get("time", "09:00")),
+            due_date=date.fromisoformat(str(data.get("due_date", date.today().isoformat()))),
+            required_today=bool(data.get("required_today", True)),
+            completed=bool(data.get("completed", False)),
+        )
+
 
 @dataclass
 class Pet:
@@ -100,6 +131,28 @@ class Pet:
                 return next_task
         return None
 
+    def to_dict(self) -> dict[str, str | int | list[dict[str, str | int | bool]]]:
+        """Convert the pet into a JSON-friendly dictionary."""
+        return {
+            "name": self.name,
+            "species": self.species,
+            "age": self.age,
+            "care_notes": self.care_notes,
+            "tasks": [task.to_dict() for task in self.tasks],
+        }
+
+    @classmethod
+    def from_dict(cls, data: dict[str, object]) -> Pet:
+        """Create a pet from a JSON-friendly dictionary."""
+        tasks_data = data.get("tasks", [])
+        return cls(
+            name=str(data["name"]),
+            species=str(data["species"]),
+            age=int(data["age"]),
+            care_notes=str(data.get("care_notes", "")),
+            tasks=[Task.from_dict(task_data) for task_data in tasks_data if isinstance(task_data, dict)],
+        )
+
 
 @dataclass
 class Owner:
@@ -133,6 +186,36 @@ class Owner:
 
         task_names = ", ".join(task.name for task in upcoming_tasks)
         return f"Today's remaining tasks for {self.name}: {task_names}."
+
+    def to_dict(self) -> dict[str, object]:
+        """Convert the owner into a JSON-friendly dictionary."""
+        return {
+            "name": self.name,
+            "time_available": self.time_available,
+            "preferences": self.preferences,
+            "pets": [pet.to_dict() for pet in self.pets],
+        }
+
+    def save_to_json(self, file_path: str = "data.json") -> None:
+        """Save the owner, pets, and tasks to a JSON file."""
+        path = Path(file_path)
+        path.write_text(json.dumps(self.to_dict(), indent=2), encoding="utf-8")
+
+    @classmethod
+    def load_from_json(cls, file_path: str = "data.json") -> Owner:
+        """Load an owner, pets, and tasks from a JSON file when it exists."""
+        path = Path(file_path)
+        if not path.exists():
+            return cls(name="Jordan", time_available=60, preferences=[])
+
+        data = json.loads(path.read_text(encoding="utf-8"))
+        pets_data = data.get("pets", [])
+        return cls(
+            name=str(data.get("name", "Jordan")),
+            time_available=int(data.get("time_available", 60)),
+            preferences=[str(item) for item in data.get("preferences", [])],
+            pets=[Pet.from_dict(pet_data) for pet_data in pets_data if isinstance(pet_data, dict)],
+        )
 
 
 @dataclass

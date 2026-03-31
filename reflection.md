@@ -20,6 +20,7 @@ classDiagram
         +pets
         +update_preferences()
         +add_pet()
+        +get_all_tasks()
         +view_today_plan()
     }
 
@@ -32,6 +33,7 @@ classDiagram
         +add_task()
         +remove_task()
         +list_upcoming_needs()
+        +mark_task_complete()
     }
 
     class Task {
@@ -40,20 +42,31 @@ classDiagram
         +duration
         +priority
         +frequency
+        +time
+        +due_date
         +required_today
         +completed
         +mark_complete()
+        +is_due_today()
+        +next_due_date()
+        +create_next_occurrence()
         +fits_schedule()
         +describe_reason()
     }
 
     class Scheduler {
         +owner
+        +available_time
         +pets
         +tasks
-        +available_time
+        +get_available_time()
         +generate_daily_plan()
         +sort_by_priority()
+        +sort_by_time()
+        +filter_tasks_by_status()
+        +filter_tasks_by_pet()
+        +mark_task_complete()
+        +detect_conflicts()
         +filter_unfit_tasks()
         +explain_plan()
     }
@@ -61,8 +74,8 @@ classDiagram
     Owner "1" --> "0..*" Pet : has
     Pet "1" --> "0..*" Task : has
     Scheduler --> Owner : uses
-    Scheduler --> Pet : plans for
-    Scheduler --> Task : schedules
+    Scheduler ..> Pet : reads pets
+    Scheduler ..> Task : sorts and filters
 ```
 
 - Briefly describe your initial UML design.
@@ -93,13 +106,13 @@ classDiagram
 
 **a. How you used AI**
 
-- How did you use AI tools during this project (for example: design brainstorming, debugging, refactoring)?
-- What kinds of prompts or questions were most helpful?
+- I used VS Code Copilot most heavily for design brainstorming, turning UML ideas into class skeletons, drafting tests, and reviewing whether my scheduling logic matched the structure of the project. The most effective Copilot features were chat-based code review, quick drafting of class and test stubs, and targeted questions about specific Python tools like `sorted()`, `lambda`, and `timedelta`.
+- The most helpful prompts were narrow and concrete. For example, asking how the `Scheduler` should retrieve tasks from the `Owner` helped me keep the relationships clean, and asking what edge cases mattered most for sorting and recurrence helped me plan my tests. Prompts that referenced a specific file or a single method were much more useful than broad requests for "the whole solution."
 
 **b. Judgment and verification**
 
-- Describe one moment where you did not accept an AI suggestion as-is.
-- How did you evaluate or verify what the AI suggested?
+- One important moment where I did not accept an AI suggestion as-is was around the scheduler design. A more automatic approach would have let `Scheduler` keep its own copies of pets and tasks, but I rejected that because it would duplicate state that already lived on the `Owner` and `Pet` objects. I changed the design so the scheduler derives pets and tasks from the owner instead.
+- I also reviewed a more compact conflict-detection approach, but I kept the simpler loop version because it was easier to read and explain. I evaluated these suggestions by comparing them to my UML, checking whether they made the relationships cleaner, and then verifying behavior through `main.py`, `pytest`, and the Streamlit UI. Using separate chat sessions for different phases also helped a lot because it kept design questions, algorithm questions, and testing questions from getting mixed together. That made it easier to stay organized and treat each phase like a focused engineering task instead of one long, messy conversation.
 
 ---
 
@@ -129,4 +142,4 @@ classDiagram
 
 **c. Key takeaway**
 
-- What is one important thing you learned about designing systems or working with AI on this project?
+- One important thing I learned is that AI works best when I act as the lead architect instead of treating it like an autopilot. Copilot was very useful for generating options, speeding up coding, and surfacing ideas I might have missed, but I still had to decide which structure was clean, which tradeoffs were acceptable, and how to verify that the system really worked. The best results came from using AI as a fast collaborator while I stayed responsible for the final design.
