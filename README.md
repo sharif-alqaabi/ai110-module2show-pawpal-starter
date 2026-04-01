@@ -77,3 +77,7 @@ python -m pytest
 The current test suite covers task completion, adding tasks to pets, chronological sorting, recurring daily task creation, and conflict detection for duplicate task times.
 
 Confidence Level: 4/5 stars. The core backend behaviors are covered by passing automated tests, but I would still want more edge-case and UI-level tests before calling the whole system fully production-ready.
+
+## 📸 Demo
+
+<a href="/course_images/ai110/PawPal+.png" target="_blank"><img src='/course_images/ai110/PawPal+.png' title='PawPal App' width='' alt='PawPal App' class='center-block' /></a>
