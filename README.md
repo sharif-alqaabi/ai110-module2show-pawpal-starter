@@ -80,6 +80,6 @@ Confidence Level: 4/5 stars. The core backend behaviors are covered by passing a
 
 ## 📸 Demo
 
-<img width="2672" height="1522" alt="PawPal+" src="https://github.com/user-attachments/assets/9e5ca950-c694-42cc-859a-03820c4f5d8f" />
+<img width="2672" height="1522" alt="PawPal+" src="https://github.com/user-attachments/assets/8bca767e-c8b0-4bd0-999d-3a29b82393b5" />
 
 
