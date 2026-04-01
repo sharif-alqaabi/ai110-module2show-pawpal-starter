@@ -135,11 +135,14 @@ classDiagram
 **a. What went well**
 
 - What part of this project are you most satisfied with?
+- I am most satisfied with how the project grew from a simple UML design into a working system with a clear separation between the backend logic and the Streamlit UI. The scheduler, recurrence logic, conflict warnings, persistence, and tests all connect in a way that feels organized instead of rushed.
 
 **b. What you would improve**
 
 - If you had another iteration, what would you improve or redesign?
+- If I had another iteration, I would improve the scheduling algorithm so it could reason about overlapping task durations instead of only exact matching start times. I would also add stronger input validation in the UI, more edge-case tests, and more editing controls so users could update or remove pets and tasks more easily.
 
 **c. Key takeaway**
 
+- What is one important thing you learned about designing systems or working with AI on this project?
 - One important thing I learned is that AI works best when I act as the lead architect instead of treating it like an autopilot. Copilot was very useful for generating options, speeding up coding, and surfacing ideas I might have missed, but I still had to decide which structure was clean, which tradeoffs were acceptable, and how to verify that the system really worked. The best results came from using AI as a fast collaborator while I stayed responsible for the final design.
